@@ -5,19 +5,28 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>打殭屍</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap"
+    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
+    body {
+      background-image: url(./background.png);
+    }
+
     #game {
       width: 1000px;
       height: 600px;
       background: black;
       overflow: hidden;
       position: relative;
-      /* margin: auto; */
-      /* cursor: url(./cursor.png) 50 50, auto; */
+      margin: auto;
+      float: left;
+      font-family: 'Montserrat', sans-serif;
     }
 
     #game>img {
@@ -39,9 +48,77 @@
       text-align: center;
     }
 
-    .blood {
-      /* 忽略點擊事件 */
-      pointer-events: none;
+    #info {
+      float: left;
+      height: 600px;
+      width: calc((100% - 1000px)/2);
+      max-width: 50%;
+      box-sizing: border-box;
+      background-image: url(./infoimg.png);
+    }
+
+    #infotext {
+      transform: translate(114px, 33px);
+      font-family: 'Caveat', cursive;
+      font-size: 24px;
+    }
+
+    .start {
+      background: #fff;
+      border: none;
+      width: 190px;
+      height: 47px;
+      box-shadow: 5px 5px 10px #f00;
+      border-radius: 10px;
+      font-family: 'Caveat', cursive;
+      font-size: 24px;
+    }
+
+    .start:hover {
+      cursor: pointer;
+    }
+
+    .start:active {
+      background: #e5e2e2;
+      box-shadow: 2px 2px 10px rgb(141, 0, 0);
+    }
+
+    #howto {
+      float: right;
+      width: calc((100% - 1000px)/2);
+      max-width: 50%;
+      box-sizing: border-box;
+    }
+
+    #howto img {
+      height: 600px;
+    }
+
+    #gameplay {
+      clear: both;
+      text-align: center;
+    }
+
+    .mtext {
+      width: 300px;
+      height: 30px;
+      border-radius: 5px;
+      box-shadow: 5px 5px 10px #000000;
+      font-size: 18px;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    .light {
+      background-image: url(./cursor_black.png);
+      background-position: -2px -2px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      margin-top: 10px;
+    }
+
+    .light:hover {
+      cursor: pointer;
     }
 
     .swal2-icon-content {
@@ -51,142 +128,151 @@
 </head>
 
 <body>
-  <input type="button" value="開始" id="btn-start">
-  <br>
-  <p>分數: <span id="text-score">0</span></p>
-  <p>剩餘: <span id="text-time">0</span> 秒</p>
-  <p>最高分玩家: <span id="text-highscorename">沒有人</span></p>
-  <p>最高分分數: <span id="text-highscore">0</span></p>
-  <hr>
-  <div id="game">
-  </div><br>
-  <input type="text" id="mtext">
-  <button id="delete-btn">聖光!</button>
-  在輸入欄位中輸入殭屍頭上的英文單字，並點擊<聖光!>按鈕，或是按下Enter鍵，如果相符即能擊殺該殭屍。
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js'
-      integrity='sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ=='
-      crossorigin='anonymous'></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-      let zombie
-      // 分數
-      let score = 0
-      // 剩餘秒數
-      let countdown = 0
-      // 計時器
-      let timer = 0
-      // 最高分
-      const highscore = localStorage.zombie ? JSON.parse(localStorage.zombie) : { name: '沒有人', score: 0 }
-      $('#text-highscorename').text(highscore.name)
-      $('#text-highscore').text(highscore.score)
+  <div id="info">
+    <div id="infotext">
+      <br>
+      <p>Score: <span id="text-score">0</span></p>
+      <p>Time: <span id="text-time">0</span> s</p>
+      <p>Top Player: <span id="text-highscorename">沒有人</span></p>
+      <p>Highest score: <span id="text-highscore">0</span></p>
+      <input type="button" value="Start" id="btn-start" class="start">
+    </div>
 
-      const texts = [
-        'apple', 'august', 'black', 'blind', 'candle', 'careful', 'doctor', 'dinner', 'eraser', 'envelope', 'finally', 'fisherman', 'glasses', 'grandfather', 'heavy', 'hippo',
-        'island', 'internet', 'january', 'jacket', 'kangaroo', 'kitchen', 'library', 'lettuce', 'machine', 'mailman', 'national', 'neighbor', 'officer', 'outside', 'package',
-        'popcorn', 'quiet', 'question', 'rat', 'refrigerator', 'september', 'sweater', 'thursday', 'tomorrow', 'umbrella', 'understand', 'vegetable', 'violin', 'watermelon',
-        'weather', 'yesterday', 'yellow', 'zoo', 'zebra'
-      ]
+  </div>
+  <div id="game"></div>
+  <div id="howto">
+    <img src="./懸賞單.gif" alt="">
+  </div>
+  <div id="gameplay">
+    <br>
+    <hr>
+    <input type="text" id="mtext" class="mtext">
+    <button id="delete-btn" class="light"></button>
+  </div>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js'
+    integrity='sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ=='
+    crossorigin='anonymous'></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    let zombie
+    // 分數
+    let score = 0
+    // 剩餘秒數
+    let countdown = 0
+    // 計時器
+    let timer = 0
+    // 最高分
+    const highscore = localStorage.zombie ? JSON.parse(localStorage.zombie) : { name: '沒有人', score: 0 }
+    $('#text-highscorename').text(highscore.name)
+    $('#text-highscore').text(highscore.score)
 
-      $('#btn-start').click(function () {
-        // 停用開始按鈕
-        $(this).attr('disabled', true)
-        // 重設
-        score = 0
-        $('#text-score').text(score)
-        countdown = 60
+    const texts = [
+      'apple', 'august', 'black', 'blind', 'candle', 'careful', 'doctor', 'dinner', 'eraser', 'envelope', 'finally', 'fisherman', 'glasses', 'grandfather', 'heavy', 'hippo',
+      'island', 'internet', 'january', 'jacket', 'kangaroo', 'kitchen', 'library', 'lettuce', 'machine', 'mailman', 'national', 'neighbor', 'officer', 'outside', 'package',
+      'popcorn', 'quiet', 'question', 'rat', 'refrigerator', 'september', 'sweater', 'thursday', 'tomorrow', 'umbrella', 'understand', 'vegetable', 'violin', 'watermelon',
+      'weather', 'yesterday', 'yellow', 'zoo', 'zebra'
+    ]
+
+    $('#btn-start').click(function () {
+      // 停用開始按鈕
+      $(this).attr('disabled', true)
+      // 重設
+      score = 0
+      $('#text-score').text(score)
+      countdown = 60
+      $('#text-time').text(countdown)
+      // 開始遊戲
+      timer = setInterval(function () {
+        // 倒數
+        countdown--
         $('#text-time').text(countdown)
-        // 開始遊戲
-        timer = setInterval(function () {
-          // 倒數
-          countdown--
-          $('#text-time').text(countdown)
-          // 隨機 1~10
-          const random = Math.ceil(Math.random() * 10)
-          // 如果隨機數字 > 5 且場上不超過 5 個才產生
-          if (random > 5 && $('.zombie').length < 5) {
-            // 隨機位置
-            const top = Math.round(Math.random() * 100) + '%'
-            const left = Math.round(Math.random() * 100) + '%'
-            const textnum = Math.round(Math.random() * texts.length)
-            // 產生
-            zombie = $(`<div class="pzombie"><p id="gtext" style="color:#fff;">${texts[textnum]}</p><img src="./1.gif" class="zombie" style="top: ${top}; left: ${left}"></div>`)
-            $('#game').append(zombie)
-            move(zombie)
-          }
-          // 時間到
-          if (countdown === 0) {
-            clearInterval(timer)
-            // 遊戲區域清空
-            $('#game').html('')
-            // 重新啟用開始按鈕
-            // 這裡因為 setInterval 用 function 所以 this 會指到 Window
-            // 所以用 $('#btn-start')
-            $('#btn-start').attr('disabled', false)
-
-            if (score > highscore.score) {
-              Swal.fire({
-                icon: 'info',
-                title: '時間到',
-                text: `最高分，你得到 ${score} 分`,
-                input: 'text',
-                inputPlaceholder: '請輸入玩家名字',
-                inputAttributes: {
-                  required: true
-                },
-                validationMessage: '名稱必填',
-                allowOutsideClick: false,
-                allowEscapeKey: false
-              }).then(function (result) {
-                highscore.name = result.value
-                highscore.score = score
-                $('#text-highscorename').text(highscore.name)
-                $('#text-highscore').text(highscore.score)
-
-                localStorage.zombie = JSON.stringify(highscore)
-              })
-
-            } else {
-              Swal.fire({
-                icon: 'info',
-                title: '時間到',
-                text: `你得到 ${score} 分`
-              })
-            }
-          }
-        }, 1000)
-      })
-
-      function move(zombie) {
-        // 隨機位置
-        const top = Math.round(Math.random() * (600 - zombie.height() - 50)) + 'px'
-        const left = Math.round(Math.random() * (1000 - zombie.width())) + 'px'
-        zombie.animate({ top, left }, 5000, function () {
+        // 隨機 1~10
+        const random = Math.ceil(Math.random() * 10)
+        // 如果隨機數字 > 5 且場上不超過 5 個才產生
+        if (random > 5 && $('.zombie').length < 5) {
+          // 隨機位置
+          const top = Math.round(Math.random() * 100) + '%'
+          const left = Math.round(Math.random() * 100) + '%'
+          const textnum = Math.round(Math.random() * texts.length)
+          // 產生
+          zombie = $(`<div class="pzombie"><p id="gtext" style="color:#fff;">${texts[textnum]}</p><img src="./1.gif" class="zombie" style="top: ${top}; left: ${left}"></div>`)
+          $('#game').append(zombie)
           move(zombie)
-        })
-      }
+        }
+        // 時間到
+        if (countdown === 0) {
+          clearInterval(timer)
+          // 遊戲區域清空
+          $('#game').html('')
+          // 重新啟用開始按鈕
+          // 這裡因為 setInterval 用 function 所以 this 會指到 Window
+          // 所以用 $('#btn-start')
+          $('#btn-start').attr('disabled', false)
 
-      $('#delete-btn').click(function () {
-        var inputText = $('#mtext').val();
+          if (score > highscore.score) {
+            Swal.fire({
+              icon: 'info',
+              title: '時間到',
+              text: `最高分，你得到 ${score} 分`,
+              input: 'text',
+              inputPlaceholder: '請輸入玩家名字',
+              inputAttributes: {
+                required: true
+              },
+              validationMessage: '名稱必填',
+              allowOutsideClick: false,
+              allowEscapeKey: false
+            }).then(function (result) {
+              highscore.name = result.value
+              highscore.score = score
+              $('#text-highscorename').text(highscore.name)
+              $('#text-highscore').text(highscore.score)
 
-        $('.pzombie').each(function () {
-          var itemText = $(this).find('#gtext').text();
+              localStorage.zombie = JSON.stringify(highscore)
+            })
 
-          if (inputText === itemText) {
-            $(this).remove()
-            score++
-            $('#text-score').text(score)
+          } else {
+            Swal.fire({
+              icon: 'info',
+              title: '時間到',
+              text: `你得到 ${score} 分`
+            })
           }
-        });
-        $('#input').val('');
-      });
+        }
+      }, 1000)
+    })
 
-      $('#mtext').on('keypress', function (event) {
-        if (event.which === 13) {
-          $('#delete-btn').trigger('click')
-          $(this).val('')
+    function move(zombie) {
+      // 隨機位置
+      const top = Math.round(Math.random() * (600 - zombie.height() - 50)) + 'px'
+      const left = Math.round(Math.random() * (1000 - zombie.width())) + 'px'
+      zombie.animate({ top, left }, 5000, function () {
+        move(zombie)
+      })
+    }
+
+    $('#delete-btn').click(function () {
+      var inputText = $('#mtext').val();
+
+      $('.pzombie').each(function () {
+        var itemText = $(this).find('#gtext').text();
+
+        if (inputText === itemText) {
+          $(this).remove()
+          score++
+          $('#text-score').text(score)
         }
       });
-    </script>
+      $('#input').val('');
+    });
+
+    $('#mtext').on('keypress', function (event) {
+      if (event.which === 13) {
+        $('#delete-btn').trigger('click')
+        $(this).val('')
+      }
+    });
+  </script>
 </body>
 
 </html>
