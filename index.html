@@ -99,6 +99,13 @@
       text-align: center;
     }
 
+    #control {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
     .mtext {
       width: 300px;
       height: 30px;
@@ -114,7 +121,7 @@
       width: 60px;
       height: 60px;
       border-radius: 50%;
-      margin-top: 10px;
+      margin-left: 10px;
     }
 
     .light:hover {
@@ -141,13 +148,15 @@
   </div>
   <div id="game"></div>
   <div id="howto">
-    <img src="./懸賞單.gif" alt="">
+    <img src="./懸賞單.jpg" alt="">
   </div>
   <div id="gameplay">
     <br>
     <hr>
-    <input type="text" id="mtext" class="mtext">
-    <button id="delete-btn" class="light"></button>
+    <div id="control">
+      <input type="text" id="mtext" class="mtext">
+      <button id="delete-btn" class="light"></button>
+    </div>
   </div>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js'
     integrity='sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ=='
@@ -162,7 +171,7 @@
     // 計時器
     let timer = 0
     // 最高分
-    const highscore = localStorage.zombie ? JSON.parse(localStorage.zombie) : { name: '沒有人', score: 0 }
+    const highscore = localStorage.zombie ? JSON.parse(localStorage.zombie) : { name: '無', score: 0 }
     $('#text-highscorename').text(highscore.name)
     $('#text-highscore').text(highscore.score)
 
@@ -263,7 +272,7 @@
           $('#text-score').text(score)
         }
       });
-      $('#input').val('');
+      $('#mtext').val('');
     });
 
     $('#mtext').on('keypress', function (event) {
